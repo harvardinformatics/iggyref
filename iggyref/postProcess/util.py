@@ -1,6 +1,6 @@
 import os.path as path
 import re, gzip, tarfile, glob
-from iggytools.utils.util import deleteItem, mkdir_p
+from iggyref.utils.util import deleteItem, mkdir_p
 
 def decompress(srcFile, destDir=None, destFile=None):
     if srcFile[-3:] != '.gz':

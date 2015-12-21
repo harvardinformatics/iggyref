@@ -1,4 +1,4 @@
-from iggytools.utils.util import isGZippedFile
+from iggyref.utils.util import isGZippedFile
 
 fileList = [ 'active_site.dat.gz', 
              'Pfam-A.hmm.gz', 

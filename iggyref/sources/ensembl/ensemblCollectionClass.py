@@ -1,7 +1,7 @@
 import os.path as path
 import os, types, re, glob, ftplib, posixpath
 from iggytools.iggyref.baseCollectionClass import baseCollection
-from iggytools.utils.util import flatlist
+from iggyref.utils.util import flatlist
 
 # ensembl Collection class
 

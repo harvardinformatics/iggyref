@@ -1,9 +1,9 @@
 import os, re, logging
 import os.path as path
-from iggytools.utils import util
+from iggyref.utils import util
 import ftplib, time, posixpath
 
-from iggytools.utils import socks
+from iggyref.utils import socks
 socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'rcsocks', 9823)
 socks.wrapmodule(ftplib)
 

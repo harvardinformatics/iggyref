@@ -1,6 +1,6 @@
 import os, glob, sys, logging, re, traceback
 import os.path as path
-from iggytools.utils.util import flatten, unique, intersect
+from iggyref.utils.util import flatten, unique, intersect
 from iggytools.iggyref.taskClasses import baseTask
 from iggytools.iggyref.rFileClass import rFile
 

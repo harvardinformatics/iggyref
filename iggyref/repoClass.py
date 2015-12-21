@@ -6,7 +6,7 @@ from iggytools.iggyref.rFileClass import rFile
 from iggytools.iggyref.baseCollectionClass import baseCollection
 from iggytools.iggyref.depGraph.graphClasses import depGraph
 from iggytools.pref.iggytools_PrefClass import Iggytools_Preferences
-from iggytools.utils.util import intersect, flatten, mkdir_p, unique, insert, pysync
+from iggyref.utils.util import intersect, flatten, mkdir_p, unique, insert, pysync
 
 class Repo(object):
 

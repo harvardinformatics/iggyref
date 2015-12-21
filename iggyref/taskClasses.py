@@ -1,6 +1,6 @@
 import logging, traceback, re
 import os.path as path
-from iggytools.utils.util import flatlist
+from iggyref.utils.util import flatlist
 from iggytools.iggyref.rFileClass import rFile
 from iggytools.iggyref.postProcess.genePred2gtf import genePred2gtf
 from iggytools.iggyref.postProcess.fasta2index import fasta2index

@@ -1,6 +1,6 @@
 import os.path as path
 import re, glob, logging, os, imp
-from iggytools.utils.util import Command_toFile, errScan, mkdir_p, get_3p_dirname
+from iggyref.utils.util import Command_toFile, errScan, mkdir_p, get_3p_dirname
 
 def fasta2index(fastaFile, C):
     log = logging.getLogger("iggyref")

@@ -1,7 +1,7 @@
 import os.path as path
 import types
 from iggytools.iggyref.baseCollectionClass import baseCollection
-from iggytools.utils.util import parse_NCBI_aliasFile, extractFromTar
+from iggyref.utils.util import parse_NCBI_aliasFile, extractFromTar
 
 
 # ncbi Collection class

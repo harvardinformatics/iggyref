@@ -1,5 +1,5 @@
 import os.path as path
-from iggytools.utils.util import md5Checksum, sumChecksum
+from iggyref.utils.util import md5Checksum, sumChecksum
 
 class rFile(object):
     def __init__(self, name, fprop = None):

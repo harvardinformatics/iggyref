@@ -1,6 +1,6 @@
 import os.path as path
 import re, glob, logging
-from iggytools.utils.util import Command_toFile, errScan
+from iggyref.utils.util import Command_toFile, errScan
 
 def gtf2transcriptome(gtfFile, genomeFastaFile, collObj, transcriptFastaFile):
     log = logging.getLogger("iggyref")

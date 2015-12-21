@@ -1,6 +1,6 @@
 import os.path as path
 import re, glob, logging, traceback
-from iggytools.utils.util import reverseComp
+from iggyref.utils.util import reverseComp
 
 class dbsnp2vcf(object):
     # Note: This format conversion function is not complete. For all variant types except forward/reverse strand SNPs, the base preceeding 

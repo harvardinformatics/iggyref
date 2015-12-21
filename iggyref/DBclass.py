@@ -2,7 +2,7 @@ import os.path as path
 import logging
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from iggytools.iggyref.sqlalchemy_models import getBase, FileRecord, CollectionRecord, CommonName
+from iggyref.sqlalchemy_models import getBase, FileRecord, CollectionRecord, CommonName
 
 class iggyrefDB(object):
 

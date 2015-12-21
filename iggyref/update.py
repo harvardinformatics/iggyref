@@ -1,7 +1,7 @@
 import os.path as path
 import sys, argparse, re
 from iggytools.iggyref.repoClass import Repo
-from iggytools.utils.util import getUserHome
+from iggyref.utils.util import getUserHome
 
 def update(inputArgs):
 

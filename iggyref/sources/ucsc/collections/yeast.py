@@ -1,4 +1,4 @@
-from iggytools.utils.util import isGZippedFile
+from iggyref.utils.util import isGZippedFile
 
 fileList = [ 'chromFa.tar.gz',   #files to be downloaded
              'ensGene.txt.gz', 

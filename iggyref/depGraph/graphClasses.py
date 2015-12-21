@@ -1,5 +1,5 @@
 import os.path as path
-from iggytools.utils.util import intersect, unique
+from iggyref.utils.util import intersect, unique
 
 class Vertex(object):
     def __init__(self, filename):

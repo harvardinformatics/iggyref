@@ -1,4 +1,4 @@
-from iggytools.utils.util import isGZippedFile
+from iggyref.utils.util import isGZippedFile
 
 fileList = [ 'GENOME_FASTA_GZ',
              'refGene.txt.gz', 
