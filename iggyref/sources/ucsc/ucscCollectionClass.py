@@ -1,6 +1,6 @@
 import os.path as path
 import types, re, glob, os, posixpath
-from iggytools.iggyref.baseCollectionClass import baseCollection
+from iggyref.baseCollectionClass import baseCollection
 
 # ucsc Collection class
 

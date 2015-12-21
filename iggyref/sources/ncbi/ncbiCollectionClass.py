@@ -1,6 +1,6 @@
 import os.path as path
-import types
-from iggytools.iggyref.baseCollectionClass import baseCollection
+import datetime
+from iggyref.baseCollectionClass import baseCollection
 from iggyref.utils.util import parse_NCBI_aliasFile, extractFromTar
 
 
@@ -10,7 +10,7 @@ class ncbiCollection(baseCollection):
 
     def __init__(self, primaryID, repo, ftpConn = None):
 
-        collMod = __import__('iggytools.iggyref.sources.%s.collections.%s' % (repo.source, primaryID),fromlist=[primaryID])
+        collMod = __import__('iggyref.sources.%s.collections.%s' % (repo.source, primaryID),fromlist=[primaryID])
         collProp = getattr(collMod,'collectionProperties')
         
         if collProp['aliasFileType']:
@@ -52,8 +52,14 @@ class ncbiCollection(baseCollection):
 
 
     def setLocalFilePath(self, File):
+        '''
+        Sets a subdirectory that is a combination of the year and "quarter",
+        e.g. 2015-1
+        '''
         if not File.localPath:
-            File.localPath = path.join(self.downloadDir, File.name)
+            quarter = int(round(datetime.datetime.now().month / 4) + 1)
+            subdir = '%d-%d' % (datetime.datetime.now().year, quarter)
+            File.localPath = path.join(self.downloadDir, subdir, File.name)
 
 
     def setFtpFilePath(self, File):

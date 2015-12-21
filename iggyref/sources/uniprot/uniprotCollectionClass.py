@@ -1,6 +1,6 @@
 import os.path as path
-import os, types, posixpath
-from iggytools.iggyref.baseCollectionClass import baseCollection
+import posixpath
+from iggyref.baseCollectionClass import baseCollection
 
 # uniprot Collection class
 

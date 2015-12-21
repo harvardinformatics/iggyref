@@ -3,7 +3,7 @@ import os.path as path
 from iggytools.iggyref.FTPclass import iggyrefFTP
 from iggytools.iggyref.DBclass import iggyrefDB
 from iggytools.iggyref.rFileClass import rFile
-from iggytools.iggyref.baseCollectionClass import baseCollection
+from iggyref.baseCollectionClass import baseCollection
 from iggytools.iggyref.depGraph.graphClasses import depGraph
 from iggytools.pref.iggytools_PrefClass import Iggytools_Preferences
 from iggyref.utils.util import intersect, flatten, mkdir_p, unique, insert, pysync
