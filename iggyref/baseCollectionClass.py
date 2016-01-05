@@ -1,8 +1,8 @@
 import os, glob, sys, logging, re, traceback
 import os.path as path
 from iggyref.utils.util import flatten, unique, intersect
-from iggytools.iggyref.taskClasses import baseTask
-from iggytools.iggyref.rFileClass import rFile
+from iggyref.taskClasses import baseTask
+from iggyref.rFileClass import rFile
 
 log = logging.getLogger('iggyref')
 
@@ -10,7 +10,7 @@ class baseCollection(object):
 
     @classmethod
     def getInstance(cls, primaryID, repo, ftpConn = None):
-        modulepath = 'iggytools.iggyref.sources.%s.%sCollectionClass' % ((repo.source,)*2)
+        modulepath = 'iggyref.sources.%s.%sCollectionClass' % ((repo.source,)*2)
         try:
             mod = __import__(modulepath,fromlist=['%sCollectionClass'%repo.source])
             klass = getattr(mod, '%sCollection' % repo.source)
@@ -25,7 +25,7 @@ class baseCollection(object):
     def __init__(self, primaryID, repo, ftpConn=None, collectionProperties = None):
 
         if not collectionProperties:
-            collMod = __import__('iggytools.iggyref.sources.%s.collections.%s' % (repo.source, primaryID),fromlist=[primaryID])
+            collMod = __import__('iggyref.sources.%s.collections.%s' % (repo.source, primaryID),fromlist=[primaryID])
             self.properties = getattr(collMod,'collectionProperties')
         else:
             self.properties = collectionProperties
@@ -45,7 +45,7 @@ class baseCollection(object):
 
         if 'tasks' in self.properties: #ensure task file lists are of type list
             for taskDict in self.properties['tasks']:        
-                if type(taskDict['inFiles']) != list: 
+                if 'inFiles' in taskDict and type(taskDict['inFiles']) != list: 
                     taskDict['inFiles'] = [taskDict['inFiles']]
                 if 'outFiles' in taskDict and type(taskDict['outFiles']) != list: 
                     taskDict['outFiles'] = [taskDict['outFiles']]

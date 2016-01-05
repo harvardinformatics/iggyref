@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+# encoding: utf-8
+'''
+ftp mimic for testing
+
+@author:     Aaron Kitzmiller
+
+@copyright:  2015 The Presidents and Fellows of Harvard College. All rights reserved.
+
+@license:    GPL v2.0
+
+@contact:    aaron_kitzmiller@harvard.edu
+@deffield    updated: Updated
+'''
+
+import sys, os, traceback, shutil
+
+REPOURLS = {
+    'ftp.ncbi.nih.gov'
+}
+
+def main(argv=None): # IGNORE:C0111
+    '''Command line options.'''
+
+    if argv is None:
+        argv = sys.argv
+
+    try:
+        url = argv[0]
+        upath = ''
+        for repourl in REPOURLS:
+            i = url.find(repourl)
+            if i > -1:
+                upath = url[i + len(repourl)]
+        if upath != '':
+            shutil.copy(upath,os.path.curdir)
+        
+    except Exception, e:
+        sys.stderr.write("%s\n%s\n" % (str(e),traceback.format_exc()))
+        return 2
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -261,6 +261,10 @@ def find_missingAndDiffFiles(dcmp, toCopy = None):
              and path.isfile( srcItem_absPath ) ): #item is a file, not a directory
             destItem_absPath = path.join(dcmp.right, src_itemName)
             toCopy.append( (srcItem_absPath, destItem_absPath) ) #append non-ignored files that exist only in left
+        elif path.isdir( srcItem_absPath ):
+            destItem_absPath = path.join(dcmp.right, src_itemName)
+            mkdir_p(destItem_absPath)
+            toCopy.extend(find_missingAndDiffFiles(filecmp.dircmp(srcItem_absPath, destItem_absPath), toCopy))
 
     for src_itemName in dcmp.diff_files:  #files that differ in left and right
         srcItem_absPath = path.join(dcmp.left, src_itemName)

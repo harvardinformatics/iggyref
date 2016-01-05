@@ -10,15 +10,15 @@ class iggyrefDB(object):
 
         Base = getBase()
 
-        if pref.DB_TYPE == 'mysql':
-            engine = create_engine('mysql://%s:%s@%s:'%(pref.MYSQL_USER, pref.MYSQL_PASS, pref.MYSQL_HOST) \
-                                       + path.join('3306',pref.MYSQL_DB), echo = pref.LOGGING_LEVEL == logging.DEBUG)
+        if pref['IGGYREF_DB_TYPE'] == 'mysql':
+            engine = create_engine('mysql://%s:%s@%s:'%(pref['IGGYREF_DB_USER'], pref['IGGYREF_DB_PASSWORD'], pref['IGGYREF_DB_HOST']) \
+                                       + path.join('3306',pref['IGGYREF_DB']), echo = pref['IGGYREF_LOG_LEVEL'] == logging.DEBUG)
 
-        elif pref.DB_TYPE == 'sqlite':
-            engine = create_engine('sqlite:///' + path.join(pref.LOG_DIR,'iggyref.db'), echo = pref.LOGGING_LEVEL == logging.DEBUG)
+        elif pref['IGGYREF_DB_TYPE'] == 'sqlite':
+            engine = create_engine('sqlite:///' + path.join(pref['IGGYREF_LOG_DIR'],'iggyref.db'), echo = pref['IGGYREF_LOG_LEVEL'] == logging.DEBUG)
 
         else:
-            raise Exception('Unrecognized DB_TYPE: %s' % pref.DB_TYPE)
+            raise Exception('Unrecognized DB_TYPE: %s' % pref['IGGYREF_DB_TYPE'])
 
         Base.metadata.create_all(engine)
 

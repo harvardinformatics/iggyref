@@ -1,12 +1,13 @@
 import logging, traceback, re
-import os.path as path
+import os.path as path, os
+import glob, shutil
 from iggyref.utils.util import flatlist
-from iggytools.iggyref.rFileClass import rFile
-from iggytools.iggyref.postProcess.genePred2gtf import genePred2gtf
-from iggytools.iggyref.postProcess.fasta2index import fasta2index
-from iggytools.iggyref.postProcess.util import decompress, untar, concatFiles
+from iggyref.rFileClass import rFile
+from iggyref.postProcess.genePred2gtf import genePred2gtf
+from iggyref.postProcess.fasta2index import fasta2index
+from iggyref.postProcess.util import decompress, untar, concatFiles
 
-log = logging.getLogger('iggyref')
+logger = logging.getLogger('iggyref')
 
 class baseTask(object):
 
@@ -23,6 +24,8 @@ class baseTask(object):
             return Txt2gtf(taskDict, C)
         elif taskName.lower() == 'fasta2index':
             return Fasta2index(taskDict, C)
+        elif taskName.lower() == 'nrremoveolddirs':
+            return NrRemoveOldDirs(taskDict, C)
         else:
             raise Exception('Unrecognized taskName: %s' % taskName)
 
@@ -153,3 +156,34 @@ class Fasta2index(baseTask):
         self.validateInOut(1,0) # 1 input, 0 outputs
         inFile = self.inFiles[0].localPath
         fasta2index(inFile, self.C)
+        
+        
+class NrRemoveOldDirs(baseTask):
+    '''
+    If there are 3 directories in the ncbi/nr repository, removes the oldest one.
+    '''
+    def __init__(self, taskDict, C):
+        baseTask.__init__(self, taskDict, C)
+        self.taskName = 'NrRemoveOldDirs'  
+
+    def run(self):
+        logger.debug('Checking dir for more than 2 subdirs %s' % self.C.finalDir)
+
+        if os.path.exists(self.C.finalDir):
+            dirs = [d for d in os.listdir(self.C.finalDir) if os.path.isdir(os.path.join(self.C.finalDir, d))]
+            if len(dirs) >= self.C.properties['maxnrdirs']:
+                dirs.sort(key=lambda d: os.path.getctime(os.path.join(self.C.finalDir, d)))
+                while len(dirs) >= self.C.properties['maxnrdirs']:
+                    toremove = os.path.join(self.C.finalDir,dirs.pop(0))                   
+                    logger.debug('Gonna remove dir %s' % toremove)
+                    try:
+                        shutil.rmtree(toremove, ignore_errors=False)
+                    except Exception, e:
+                        logger.info('Failure while removing old nr path \n%s' % str(e))
+                
+            
+       
+        
+        
+        
+    

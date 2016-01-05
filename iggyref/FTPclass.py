@@ -4,31 +4,37 @@ from iggyref.utils import util
 import ftplib, time, posixpath
 
 from iggyref.utils import socks
-socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'rcsocks', 9823)
-socks.wrapmodule(ftplib)
 
-log = logging.getLogger('iggyref')
+PROXY       = os.environ.get('IGGYREF_PROXY',None)
+PROXY_PORT  = os.environ.get('IGGYREF_PROXY_PORT',None)
+
+if PROXY is not None and PROXY_PORT is not None:
+    #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'rcsocks', 9823)
+    socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, PROXY, PROXY_PORT)
+    socks.wrapmodule(ftplib)
+
+logger = logging.getLogger('iggyref')
 
 class iggyrefFTP():
     def __init__(self, site, tempDir):
-        ftp = ftplib.FTP(site, user = '', passwd = '', acct = '', timeout = 30)  #timeout in seconds
-        ftp.set_debuglevel(0)
+        ftp = ftplib.FTP(site, user = '', passwd = '', acct = '', timeout = 10)  #timeout in seconds
+        ftp.set_debuglevel(1)
         ftp.set_pasv(True)
         ftp.login() 
         self.topDir = ftp.pwd()
-        self.ftp = ftp
-
         util.mkdir_p(tempDir)
         self.tempDir = tempDir
+        self.site = site
+        self.ftp = ftp
 
     def nlst(self, pwd):
         attempts = 0
         while True:
             attempts += 1
             if attempts == 1:
-                log.debug("Retrieving directory listing for %s" % (pwd))
+                logger.debug("Retrieving directory listing for %s" % (pwd))
             else:
-                log.debug("Previous attempt to retrieve directory listing for %s failed. Current attempt: %d" % (pwd, attempts))
+                logger.debug("Previous attempt to retrieve directory listing for %s failed. Current attempt: %d" % (pwd, attempts))
             try:
                 return self.ftp.nlst()
             except:
@@ -72,9 +78,9 @@ class iggyrefFTP():
             fh.seek(0,0) # at each attempt start writing to beginning of output file
             attempts += 1
             if attempts == 1:
-                log.info("Copying %s to %s." % (srcFile, destFile))
+                logger.info("Copying %s to %s." % (srcFile, destFile))
             else:
-                log.debug("Previous attempt to download %s failed. Current attempt: %d" % (srcFile, attempts))
+                logger.debug("Previous attempt to download %s failed. Current attempt: %d" % (srcFile, attempts))
             try:
                 if ascii:
                     self.ftp.retrlines('RETR ' + srcFile, writeline)
@@ -104,9 +110,9 @@ class iggyrefFTP():
         while True:
             attempts += 1
             if attempts == 1:
-                log.debug("Retrieving time string for %s" % (remoteFile))
+                logger.debug("Retrieving time string for %s" % (remoteFile))
             else:
-                log.debug("Previous attempt at time string retrieval for %s failed. Current attempt: %d" % (remoteFile, attempts))
+                logger.debug("Previous attempt at time string retrieval for %s failed. Current attempt: %d" % (remoteFile, attempts))
             try:
                 res = self.ftp.sendcmd('MDTM ' + remoteFile) 
                 break

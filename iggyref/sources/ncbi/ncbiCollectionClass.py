@@ -1,7 +1,8 @@
 import os.path as path
 import datetime
+import math
 from iggyref.baseCollectionClass import baseCollection
-from iggyref.utils.util import parse_NCBI_aliasFile, extractFromTar
+from iggyref.utils.util import parse_NCBI_aliasFile, extractFromTar, mkdir_p
 
 
 # ncbi Collection class
@@ -12,7 +13,6 @@ class ncbiCollection(baseCollection):
 
         collMod = __import__('iggyref.sources.%s.collections.%s' % (repo.source, primaryID),fromlist=[primaryID])
         collProp = getattr(collMod,'collectionProperties')
-        
         if collProp['aliasFileType']:
             aliasFilename = '%s.%s' % (primaryID, collProp['aliasFileType'])
             dbFile_ftpSubDir = collProp['dbFileProp']['ftpSubDir']
@@ -23,6 +23,7 @@ class ncbiCollection(baseCollection):
             else: #get remote pal/nal file
 
                 firstDBFilename = '%s.00.tar.gz' % primaryID
+                aliasFilename = path.join('%s.00' % primaryID,aliasFilename)
                 firstDBFile_remote = path.join( dbFile_ftpSubDir, firstDBFilename )
                 firstDBFile_local = path.join( repo.tempDir, firstDBFilename )
                 ftpConn.copyFile(firstDBFile_remote, firstDBFile_local)            
@@ -33,7 +34,7 @@ class ncbiCollection(baseCollection):
                 
             #set collection fileList from .pal/.nal alias file
             dbFiles = ['%s.tar.gz' % x for x in parse_NCBI_aliasFile(aliasFile)]
-            collProp['fileList'] += dbFiles
+            collProp['fileList'] = dbFiles
 
             for filename in dbFiles:
 
@@ -57,9 +58,11 @@ class ncbiCollection(baseCollection):
         e.g. 2015-1
         '''
         if not File.localPath:
-            quarter = int(round(datetime.datetime.now().month / 4) + 1)
+            quarter = (datetime.datetime.now().month - 1)// 3.0 + 1
             subdir = '%d-%d' % (datetime.datetime.now().year, quarter)
-            File.localPath = path.join(self.downloadDir, subdir, File.name)
+            pth = path.join(self.downloadDir,subdir)
+            mkdir_p(pth)
+            File.localPath = path.join(pth, File.name)
 
 
     def setFtpFilePath(self, File):
