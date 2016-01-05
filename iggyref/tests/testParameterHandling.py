@@ -64,7 +64,12 @@ class Test(unittest.TestCase):
             os.remove(self.preferencesfile)
             
         if os.path.exists(self.logdir):
-            os.remove(os.path.join(self.logdir,'iggyref.log'))
+            try:
+                os.remove(os.path.join(self.logdir,'iggyref.log'))
+                os.remove(os.path.join(self.logdir,'iggyref.db'))
+                os.rmdir(os.path.join(self.logdir,'ncbi'))
+            except Exception:
+                pass
             os.rmdir(self.logdir)
     
     
