@@ -23,11 +23,12 @@ class ncbiCollection(baseCollection):
             else: #get remote pal/nal file
 
                 firstDBFilename = '%s.00.tar.gz' % primaryID
-                aliasFilename = path.join('%s.00' % primaryID,aliasFilename)
+#                aliasFilename = path.join('%s.00' % primaryID,aliasFilename)
                 firstDBFile_remote = path.join( dbFile_ftpSubDir, firstDBFilename )
                 firstDBFile_local = path.join( repo.tempDir, firstDBFilename )
                 ftpConn.copyFile(firstDBFile_remote, firstDBFile_local)            
 
+                print "Extracting %s from %s to %s" % (aliasFilename,firstDBFile_local,repo.tempDir)
                 extractFromTar(firstDBFile_local, aliasFilename, repo.tempDir)
                 aliasFile = path.join(repo.tempDir, aliasFilename)
 

@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
             'nr.01',
             'nr.02',
         ]
-        self.goodchecksum = 'b083fd07111b28b63a23a7896d4f182c nr.00.tar.gz'
+        self.goodchecksum = '85ea83e206562392415c16737ab4a01a nr.00.tar.gz'
         self.checksumfilename = 'blast/db/nr.00.tar.gz.md5'
 
 
