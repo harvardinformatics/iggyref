@@ -9,8 +9,13 @@ from iggyref.utils import socks
 PROXY       = os.environ.get('IGGYREF_PROXY',None)
 PROXY_PORT  = os.environ.get('IGGYREF_PROXY_PORT',None)
 
+
 if PROXY is not None and PROXY_PORT is not None:
     #socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, 'rcsocks', 9823)
+    try:
+        PROXY_PORT = int(PROXY_PORT)
+    except Exception:
+        raise UserException('PROXY_PORT must be an integer: %s' % PROXY_PORT)
     socks.setdefaultproxy(socks.PROXY_TYPE_SOCKS5, PROXY, PROXY_PORT)
     socks.wrapmodule(ftplib)
 
