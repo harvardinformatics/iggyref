@@ -52,6 +52,10 @@ class Test(unittest.TestCase):
 
     def setUp(self):
         
+        self.workingdir = os.path.abspath(os.path.dirname(__file__))
+        self.cwd = os.path.abspath(os.getcwd())
+        os.chdir(self.workingdir)
+        
         # Setup dirs via env
         self.dirs = {
             'PATH'                  : os.environ['PATH'],
@@ -99,6 +103,7 @@ class Test(unittest.TestCase):
         self.clean()
         with open(self.checksumfilename,'w') as f:
             f.write('%s\n' % self.goodchecksum)
+        os.chdir(self.cwd)
         
     
     def testRemoveOlder(self):

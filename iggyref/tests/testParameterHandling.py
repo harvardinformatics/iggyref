@@ -57,13 +57,15 @@ class Test(unittest.TestCase):
         self.preferencesfile = 'preferences.yaml'
         self.logdir = 'log'
 
-        print 'Current file is %s' % __file__
+        self.workingdir = os.path.abspath(os.path.dirname(__file__))
+        self.cwd = os.path.abspath(os.getcwd())
+        os.chdir(self.workingdir)
 
 
     def tearDown(self):
         if os.path.exists(self.preferencesfile):
             os.remove(self.preferencesfile)
-            
+             
         if os.path.exists(self.logdir):
             try:
                 os.remove(os.path.join(self.logdir,'iggyref.log'))
@@ -73,7 +75,7 @@ class Test(unittest.TestCase):
                 pass
             os.rmdir(self.logdir)
     
-    
+        os.chdir(self.cwd)
     
     def testOverridePreferencesFile(self):
         '''
