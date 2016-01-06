@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     def setUp(self):
         '''
         Remove existing environment variable settings.
-        '''        
+        ''' 
         self.vars = [
             'IGGYREF_REPOSITORY_DIR',
             'IGGYREF_LOG_LEVEL',
@@ -57,6 +57,7 @@ class Test(unittest.TestCase):
         self.preferencesfile = 'preferences.yaml'
         self.logdir = 'log'
 
+        print 'Current file is %s' % __file__
 
 
     def tearDown(self):
@@ -111,12 +112,12 @@ class Test(unittest.TestCase):
             'IGGYREF_VERBOSE'           : ('0','False'),
             'IGGYREF_DRY_RUN'           : ('Yes','True'),
             'IGGYREF_SHOW_PARAMETERS'   : ('1','True'),
-            'IGGYREF_REPOSITORIES'      : ('uniprot,ucsc',"['uniprot', 'ucsc']"),
+            'IGGYREF_REPOSITORIES'      : ('uniprot,ucsc,ebi,ncbi',"['uniprot', 'ucsc', 'ebi', 'ncbi']"),
             'IGGYREF_UNIPROT_COLLECTIONS' : ('uniref100',"['uniref100']"),
             'IGGYREF_UCSC_COLLECTIONS'  : ('chicken_galGal3',preffilevals['IGGYREF_UCSC_COLLECTIONS'][1]),
             'IGGYREF_EBI_COLLECTIONS'   : ('interpro,pfam',preffilevals['IGGYREF_EBI_COLLECTIONS'][1]),
             'IGGYREF_NCBI_COLLECTIONS'  : ('nr',"['nr']"),
-            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',"['fruitfly']"),
+            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',None),
         }
        
         env = self.env
@@ -132,7 +133,10 @@ class Test(unittest.TestCase):
         stdout,stderr = p.communicate()
         
         for key, values in vals.iteritems():
-            self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
+            if values[1] is None:
+                self.assertTrue(key not in stdout, '%s should not be in the output.\n%s\n%s' % (key,stdout,stderr))
+            else:
+                self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
         
 
     def testOverrideCommandLine(self):
@@ -168,12 +172,12 @@ class Test(unittest.TestCase):
             'IGGYREF_VERBOSE'           : ('0','False'),
             'IGGYREF_DRY_RUN'           : ('Yes','True'),
             'IGGYREF_SHOW_PARAMETERS'   : ('1','True'),
-            'IGGYREF_REPOSITORIES'      : ('uniprot,ucsc',"['uniprot', 'ucsc']"),
+            'IGGYREF_REPOSITORIES'      : ('uniprot,ucsc,ebi',"['uniprot', 'ucsc', 'ebi']"),
             'IGGYREF_UNIPROT_COLLECTIONS' : ('uniref100',"['uniref100']"),
             'IGGYREF_UCSC_COLLECTIONS'  : ('chicken_galGal3',cmdvals['--ucsc-collections'][1]),
             'IGGYREF_EBI_COLLECTIONS'   : ('interpro,pfam',cmdvals['--ebi-collections'][1]),
-            'IGGYREF_NCBI_COLLECTIONS'  : ('nr',"['nr']"),
-            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',"['fruitfly']"),
+            'IGGYREF_NCBI_COLLECTIONS'  : ('nr',None),
+            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',None),
         }
        
         env = self.env
@@ -194,7 +198,10 @@ class Test(unittest.TestCase):
         stdout,stderr = p.communicate()
         
         for key, values in vals.iteritems():
-            self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
+            if values[1] is None:
+                self.assertTrue(key not in stdout, '%s should not be in the output.\n%s\n%s' % (key,stdout,stderr))
+            else:
+                self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
         
 
     def testAllByEnv(self):
@@ -227,9 +234,9 @@ class Test(unittest.TestCase):
             'IGGYREF_REPOSITORIES'      : ('uniprot,ucsc',"['uniprot', 'ucsc']"),
             'IGGYREF_UNIPROT_COLLECTIONS' : ('uniref100',"['uniref100']"),
             'IGGYREF_UCSC_COLLECTIONS'  : ('chicken_galGal3',"['chicken_galGal3']"),
-            'IGGYREF_EBI_COLLECTIONS'   : ('interpro,pfam',"['interpro', 'pfam']"),
-            'IGGYREF_NCBI_COLLECTIONS'  : ('nr',"['nr']"),
-            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',"['fruitfly']"),
+            'IGGYREF_EBI_COLLECTIONS'   : ('interpro,pfam',None),
+            'IGGYREF_NCBI_COLLECTIONS'  : ('nr',None),
+            'IGGYREF_ENSEMBL_COLLECTIONS' : ('fruitfly',None),
         }
         
         env = self.env
@@ -243,7 +250,10 @@ class Test(unittest.TestCase):
         stdout,stderr = p.communicate()
         
         for key, values in vals.iteritems():
-            self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
+            if values[1] is None:
+                self.assertTrue(key not in stdout, '%s should not be in the output.\n%s\n%s' % (key,stdout,stderr))
+            else:
+                self.assertTrue('%s %s' % (key, values[1]) in stdout, 'Value for %s should be %s\n%s\n%s' % (key,values[1],stdout,stderr))
 
 
 if __name__ == "__main__":

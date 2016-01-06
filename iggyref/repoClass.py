@@ -32,10 +32,13 @@ class Repo(object):
         self.downloadDir = path.join(self.pref['IGGYREF_DOWNLOAD_DIR'], source) 
         self.finalDir = path.join(self.pref['IGGYREF_REPOSITORY_DIR'], source)
 
-        mkdir_p(self.logDir)
-        mkdir_p(self.tempDir)
-        mkdir_p(self.downloadDir)
-        mkdir_p(self.finalDir)
+        try:
+            mkdir_p(self.logDir)
+            mkdir_p(self.tempDir)
+            mkdir_p(self.downloadDir)
+            mkdir_p(self.finalDir)
+        except Exception, e:
+            raise UserException('Unable to create directories for repository %s: %s' % (source,str(e)))
 
 #        self.log = logging.getLogger('iggyref')
 
