@@ -237,8 +237,8 @@ class Test(unittest.TestCase):
         expectednrfiles = []
         for nr in self.nrs:
             for ext in ['phd','phi','phr','pin','pnd','pni','pog','ppd','ppi','psd','psi','psq']:
-                expectednrfiles.append(os.path.join(self.dirs['IGGYREF_REPOSITORY_DIR'],'ncbi','nr',expectedsubdir,nr,'%s.%s' % (nr,ext)))
-            expectednrfiles.append(os.path.join(self.dirs['IGGYREF_REPOSITORY_DIR'],'ncbi','nr',expectedsubdir,nr,'nr.pal'))
+                expectednrfiles.append(os.path.join(self.dirs['IGGYREF_REPOSITORY_DIR'],'ncbi','nr',expectedsubdir,'%s.%s' % (nr,ext)))
+        expectednrfiles.append(os.path.join(self.dirs['IGGYREF_REPOSITORY_DIR'],'ncbi','nr',expectedsubdir,'nr.pal'))
                 
         expectedstr = ','.join(sorted(expectednrfiles))
         actualstr = ','.join(sorted(files))
