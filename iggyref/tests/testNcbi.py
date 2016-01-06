@@ -55,13 +55,10 @@ class Test(unittest.TestCase):
         self.workingdir = os.path.abspath(os.path.dirname(__file__))
         self.cwd = os.path.abspath(os.getcwd())
         os.chdir(self.workingdir)
+#        raise Exception('wd %s; cwd %s' % (self.workingdir,os.getcwd()))
         
         # Setup dirs via env
         self.dirs = {
-            'PATH'                  : os.environ['PATH'],
-            'PYTHONPATH'            : os.environ.get('PYTHONPATH',''),
-            'LD_LIBRARY_PATH'       : os.environ.get('LD_LIBRARY_PATH',''),
-            'DYLD_LIBRARY_PATH'       : os.environ.get('DYLD_LIBRARY_PATH',''),
             'IGGYREF_REPOSITORY_DIR' : 'repo',
             'IGGYREF_WORKING_DIR'   : 'work',
             'IGGYREF_LOG_DIR'       : LOGDIR,
@@ -96,7 +93,8 @@ class Test(unittest.TestCase):
         
         if CLEAN:
             for key in ['IGGYREF_REPOSITORY_DIR','IGGYREF_WORKING_DIR','IGGYREF_DOWNLOAD_DIR','IGGYREF_INTERMED_DIR','IGGYREF_TEMP_DIR']:
-                shutil.rmtree(self.dirs[key], ignore_errors=True)
+                if os.path.exists(self.dirs[key]):
+                    shutil.rmtree(self.dirs[key], ignore_errors=True)
 
             
     def tearDown(self):
