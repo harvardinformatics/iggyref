@@ -1,14 +1,13 @@
-import os, glob, sys, logging, re, traceback
+import os, logging, traceback
 import os.path as path
 from iggyref.FTPclass import iggyrefFTP
 from iggyref.DBclass import iggyrefDB
-from iggyref.rFileClass import rFile
 from iggyref.baseCollectionClass import baseCollection
 from iggyref.depGraph.graphClasses import depGraph
-from iggyref.utils.util import intersect, flatten, mkdir_p, unique, insert, pysync
-
+from iggyref.utils.util import flatten, mkdir_p, unique, pysync
 
 logger = logging.getLogger('iggyref')
+
 
 class Repo(object):
 
@@ -20,7 +19,7 @@ class Repo(object):
         self.pref = prefs
         
         if not selectedCollections:
-            self.selectedCollections = self.pref['IGGYREF_%s_COLLECTIONS' % source.upper()]  #source is one of ebi, ucsc, ncbi, etc.
+            self.selectedCollections = self.pref['IGGYREF_%s_COLLECTIONS' % source.upper()]  # source is one of ebi, ucsc, ncbi, etc.
         else:
             self.selectedCollections = selectedCollections
 
@@ -38,9 +37,8 @@ class Repo(object):
             mkdir_p(self.downloadDir)
             mkdir_p(self.finalDir)
         except Exception, e:
-            raise UserException('Unable to create directories for repository %s: %s' % (source,str(e)))
+            raise Exception('Unable to create directories for repository %s: %s' % (source,str(e)))
 
-#        self.log = logging.getLogger('iggyref')
 
         self.source = source
         self.updatedCollections = list()
@@ -57,12 +55,14 @@ class Repo(object):
 
     def downloadCollections(self, force=False):
         
-        if not self.db: self.db =  iggyrefDB(self.pref)
+        if not self.db: 
+            self.db = iggyrefDB(self.pref)
         
         if self.pref['IGGYREF_DRY_RUN']:
             print 'Setting up ftp connection'
         else:
-            if not self.ftp: self.ftp = iggyrefFTP(self.properties['ftpSite'], path.join(self.tempDir, 'temp_ftp'))
+            if not self.ftp:
+                self.ftp = iggyrefFTP(self.properties['ftpSite'], path.join(self.tempDir, 'temp_ftp'))
         
         for primaryID in self.selectedCollections:
             if self.pref['IGGYREF_DRY_RUN']:
@@ -70,7 +70,8 @@ class Repo(object):
                 continue
             
             C = baseCollection.getInstance(primaryID, self, self.ftp)
-            if not C: raise Exception('Unable to instantiate Collection object for %s from %s' % (primaryID, self.source))
+            if not C:
+                raise Exception('Unable to instantiate Collection object for %s from %s' % (primaryID, self.source))
             self.updatedCollections.append(C)
             self.updateSpeciesTable(C)
 
@@ -79,24 +80,24 @@ class Repo(object):
 
             for File in C.downloadFiles:
                 C.setFtpFilePath(File)
-                #get remote timestamp. Get checksum from any previous download of this file
+                # get remote timestamp. Get checksum from any previous download of this file
                 C.setRemoteTimeString(File)
                 logger.info('Remote TimeString for file %s: %s' % (File.ftpPath, File.remoteTimeString))
                 C.setRemoteChecksum(File)
                 logger.info('Remote checksum for file %s: %s' % (File.ftpPath, File.remoteChecksum))
-                File.prevChecksum = self.db.getFileAttribute(File, C, 'download_ended', 'checksum')  #checksum of file the last time it was downloaded
+                File.prevChecksum = self.db.getFileAttribute(File, C, 'download_ended', 'checksum')  # checksum of file the last time it was downloaded
 
-                #check if we need to download this file, based on timestamps and checksums
+                # check if we need to download this file, based on timestamps and checksums
                 if not force and path.isfile(File.localPath):
-                    #compare stored timestring to remote timestring:
-                    prevTimeString = self.db.getFileAttribute(File, C, 'download_ended', 'remoteTimeString') #remote timestamp from previous download
+                    # compare stored timestring to remote timestring:
+                    prevTimeString = self.db.getFileAttribute(File, C, 'download_ended', 'remoteTimeString')  # remote timestamp from previous download
                     logger.debug('TimeString of %s in DB: %s' % (File.name, prevTimeString))
-                    if prevTimeString and File.remoteTimeString == prevTimeString:  #then do not download this file
+                    if prevTimeString and File.remoteTimeString == prevTimeString:  # then do not download this file
                         logger.debug('Not downloading %s since remote, local timestrings match (%s).' % (File.name, prevTimeString))
                         continue
 
-                    #check if remote checksum has changed since previous download
-                    if File.prevChecksum and File.prevChecksum == File.remoteChecksum: #then file has not changed. Update timestring in DB and do not download file.
+                    # check if remote checksum has changed since previous download
+                    if File.prevChecksum and File.prevChecksum == File.remoteChecksum:  # then file has not changed. Update timestring in DB and do not download file.
                         self.db.writeFileRecord(File, C, status='download_ended', addendum='timestring_updated')
                         continue
 
@@ -113,7 +114,7 @@ class Repo(object):
         fileIsModified = True
         downloadAttempts = 0
     
-        while True: #attempt to download file
+        while True:  # attempt to download file
             if self.dryrun:
                 print "Writing file record: downloading"
             else:
@@ -145,22 +146,22 @@ class Repo(object):
             if self.dryrun:
                 print "Testing checksums."
             else:
-                if not File.remoteChecksum: #if no remote checksum exists, determine if file has changed based on comparison to checksum from previous download
-                    if File.prevChecksum and File.prevChecksum == File.localChecksum: #then file has not changed, so no postprocessing is needed. Update checksum in DB.
+                if not File.remoteChecksum:  # if no remote checksum exists, determine if file has changed based on comparison to checksum from previous download
+                    if File.prevChecksum and File.prevChecksum == File.localChecksum:  # then file has not changed, so no postprocessing is needed. Update checksum in DB.
                         self.db.writeFileRecord(File, C, status='download_ended', addendum='checksum_updated')
                         fileIsModified = False
                     break
-                elif File.remoteChecksum == File.localChecksum: #download successful
+                elif File.remoteChecksum == File.localChecksum:  # download successful
                     logger.debug("Local and remote checksums for %s agree." % File.ftpPath)
                     self.db.writeFileRecord(File, C, status='download_ended', addendum='remote_checksum_verified')
                     break
     
-                if downloadAttempts > 2: #report failure
+                if downloadAttempts > 2:  # report failure
                     self.db.writeFileRecord(File, C, status='remote_checksum_fail', addendum='local:%s, remote:%s' % (File.localChecksum,File.remoteChecksum))
                     self.db.writeCollectionRecord(C, 'download_fail', addendum=File.name)
                     errStr = "Downloaded file '%s' failed remote/local checksum comparison\n" % File.ftpPath + \
-                            'Local checksum: _%s_\n' % File.localChecksum + \
-                            'Remote checksum: _%s_\n'  % File.remoteChecksum
+                        'Local checksum: _%s_\n' % File.localChecksum + \
+                        'Remote checksum: _%s_\n'  % File.remoteChecksum
                     logger.error(errStr)
                     raise Exception(errStr)
 
@@ -186,7 +187,8 @@ class Repo(object):
 
 
     def copyRepoToFinal(self):
-        if not self.db: self.db =  iggyrefDB(self.pref)
+        if not self.db:
+            self.db = iggyrefDB(self.pref)
 
         logger.info('Updating final directory: %s (DEBUG = %s)' % (self.finalDir, self.pref['IGGYREF_LOG_LEVEL']))
 
@@ -203,16 +205,18 @@ class Repo(object):
 
         logger.info('Updating of final repo directory complete: %s (DEBUG = %s)' % (self.finalDir, self.pref['IGGYREF_LOG_LEVEL']))
 
-        if self.db: self.db.close()
+        if self.db:
+            self.db.close()
 
 
     def postProcess(self, C, force=False):
-        if not self.db: self.db = iggyrefDB(self.pref)
+        if not self.db:
+            self.db = iggyrefDB(self.pref)
         self.updateSpeciesTable(C)
 
-        if force: #force post-postprocessing of all files
+        if force:  # force post-postprocessing of all files
             C.modifiedFiles = C.downloadFiles
-        elif not C.modifiedFiles or not C.Tasks: # then no post-processsing to be done
+        elif not C.modifiedFiles or not C.Tasks:  # then no post-processsing to be done
             self.db.writeCollectionRecord(C,'postprocessing_complete')
             return
 
@@ -228,16 +232,22 @@ class Repo(object):
             if not T.inFiles and not T.outFiles:
                 independenttasks.append(T)
             else:
-                G.addTask(T) #add task to dependency graph
+                G.addTask(T)  # add task to dependency graph
 
-        G.setExpired(C.modifiedFiles)  #mark descendants of modified files as expired.
-        for File in unique(flatten([t.outFiles for t in C.Tasks])): #mark any missing output files as expired.
+        G.setExpired(C.modifiedFiles)  # mark descendants of modified files as expired.
+        for File in unique(flatten([t.outFiles for t in C.Tasks])):  # mark any missing output files as expired.
             if not path.exists(File.localPath):
                 G.setExpired(File)
 
-        for T in G.orderedTasks(): #run tasks ordered by dependancy
-            logger.info('Postprocessing %s, %s, %s. Task: %s -- %s -- %s ...' % (C.primaryID, C.secondaryID, C.repo.source,
-                                                                               T.taskName, ','.join(map(str,T.inFiles)), ','.join(map(str,T.outFiles))))
+        for T in G.orderedTasks():  # run tasks ordered by dependancy
+            logger.info('Postprocessing %s, %s, %s. Task: %s -- %s -- %s ...' % (
+                    C.primaryID, 
+                    C.secondaryID, 
+                    C.repo.source,
+                    T.taskName, 
+                    ','.join(map(str,T.inFiles)), ','.join(map(str,T.outFiles))
+            )
+            )
             for outFile in T.outFiles:
                 self.db.writeFileRecord(outFile, C, status='postprocessing', addendum=T.taskName)
             T.run()
@@ -259,4 +269,3 @@ class Repo(object):
 
     def __repr__(self):
         return '<Repo(%s)>' % (self.source)
-

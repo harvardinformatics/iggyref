@@ -3,10 +3,13 @@ Created on Dec 22, 2015
 
 @author: aaronkitzmiller
 '''
-import unittest, os, shutil, sys
+import unittest, os, shutil, sys, time
 import datetime
 import logging
-import math
+from iggyref.repoClass import Repo
+from iggyref.tests import mockIggyRefFTP
+from iggyref.utils.util import mkdir_p
+
 
 # Clean up in the tearDown
 CLEAN = True
@@ -40,10 +43,6 @@ fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(funcName)s - %(lev
 logger.addHandler(fh)
 
 
-from iggyref.repoClass import Repo
-from iggyref.tests import mockIggyRefFTP
-from iggyref.utils.util import mkdir_p
-
 
 class Test(unittest.TestCase):
     '''
@@ -55,7 +54,6 @@ class Test(unittest.TestCase):
         self.workingdir = os.path.abspath(os.path.dirname(__file__))
         self.cwd = os.path.abspath(os.getcwd())
         os.chdir(self.workingdir)
-#        raise Exception('wd %s; cwd %s' % (self.workingdir,os.getcwd()))
         
         # Setup dirs via env
         self.dirs = {
@@ -117,13 +115,16 @@ class Test(unittest.TestCase):
         
         # Two quarters ago
         qminustwodate = datetime.datetime.now() + datetime.timedelta(weeks=-24)
-        qminustwo = (qminustwodate.month)//3.0 + 1
+        qminustwo = (qminustwodate.month) // 3.0 + 1
         qminustwodir = '%d-%d' % (qminustwodate.year, qminustwo)
         os.mkdir(os.path.join(nrdir,qminustwodir))
         
+        # Gotta sleep to ensure creation times are different
+        time.sleep(2)
+
         # One quarter ago
         qminusonedate = datetime.datetime.now() + datetime.timedelta(weeks=-12)
-        qminusone = (qminusonedate.month)//3.0 + 1
+        qminusone = (qminusonedate.month) // 3.0 + 1
         qminusonedir = '%d-%d' % (qminusonedate.year, qminusone)
         os.mkdir(os.path.join(nrdir,qminusonedir))
         
@@ -153,7 +154,7 @@ class Test(unittest.TestCase):
         #
         # Qminustwo is gone
         #
-        self.assertFalse(os.path.exists(os.path.join(nrdir,qminustwodir)),'Directory %s still exists!' % qminustwodir)
+        self.assertFalse(os.path.exists(os.path.join(nrdir,qminustwodir)),'Directory %s still exists!' % os.path.join(nrdir,qminustwodir))
         
         
     def testChecksumFail(self):
@@ -231,7 +232,7 @@ class Test(unittest.TestCase):
             for filename in filenames:
                 files.append(os.path.join(root, filename))
                 
-        quarter = (datetime.datetime.now().month)//3.0 + 1
+        quarter = (datetime.datetime.now().month) // 3.0 + 1
         expectedsubdir = '%d-%d' % (datetime.datetime.now().year, quarter)
         
         expectednrfiles = []
@@ -274,10 +275,7 @@ class Test(unittest.TestCase):
             for nr in self.nrs:
                 checkphrase = 'Downloading blast/db/%s.tar.gz' % nr
                 self.assertTrue(checkphrase in logstr, 'Log file does not contain match phrase: %s\n%s' % (checkphrase,logstr))
-            
-        
         
 
 if __name__ == "__main__":
-    #import sys;sys.argv = ['', 'Test.testName']
     unittest.main()
