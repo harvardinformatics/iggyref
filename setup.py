@@ -9,5 +9,9 @@ setup(
         'PyYAML>=3.12',
     ],
     include_package_data = True,
-    scripts=['iggyref/bin/iggyref_update'],
+    entry_points={
+        'console_scripts': [
+            'iggyref_update=iggyref.iggyref_update:update',
+        ],
+    },
 )
