@@ -24,7 +24,7 @@ LOGLEVELS = {
 # This is just for the purposes of setting tracebacks on
 DEBUG = False
 
-def update(inputArgs):
+def update():
 
     # Setup arguments using the parameterdefs
     # First, apply any envs that are appropriate.
@@ -240,4 +240,4 @@ def update(inputArgs):
 
 if __name__ == "__main__":
     
-    update(sys.argv[1:])
+    update()
